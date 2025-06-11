@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>商品介紹 | 辣魂花開</title>
+    <link rel="stylesheet" href="product.css" />
+</head>
+<body>
+  <header>
+    <h1>
+      <a href="index.html">辣魂花開 | REBEL ROSE</a>
+    </h1>
+    <div class="nav-container">
+      <input type="text" class="search-bar" placeholder="搜尋商品..." />
+    </div>
+    <nav>
+      <ul>
+        <li><a href="cart.html">購物車</a></li>
+        <li><a href="aboutus.html">關於我們</a></li>
+        <li><a href="loging.html">會員註冊/登入</a></li>
+        <li><a href="member.html">會員資料</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container" id="productContainer"></div>
+
+  <script>
+    const products = [
+      { id: 1, name: "不規則飄帶設計吊帶", image: "image/photo1.jpg", price: 390, description: "潮流不對稱設計，性感辣妹必備單品。" },
+      { id: 2, name: "哥特紅黑拼接格子半身裙", image: "image/photo5.jpg", price: 320, description: "街頭感爆棚，帥氣女孩專屬風格。" },
+      { id: 3, name: "心機修身牛仔套裝", image: "image/photo2.jpg", price: 680, description: "上身顯瘦，下身顯腿長，性感一整套。" },
+      { id: 4, name: "美式復古高級闊腿褲", image: "image/photo3.jpg", price: 490, description: "百搭低腰設計，極致舒適與時尚兼具。" },
+      { id: 5, name: "小眾辣妹印花荷葉邊飄帶裙", image: "image/photo4.jpg", price: 480, description: "印花與荷葉邊疊搭，展現甜酷風格。" },
+      { id: 6, name: "甜酷風辣妹牛仔套裝", image: "image/photo6.jpg", price: 680, description: "一秒變身派對焦點，百看不厭的經典套裝。" },
+      { id: 7, name: "無袖修身蝴蝶印花上衣", image: "image/photo7.jpg", price: 380, description: "圖騰蝴蝶細節，充滿青春感與個性魅力。" },
+      { id: 8, name: "法式女孩經典蕾絲花邊修身上衣", image: "image/photo8.jpg", price: 380, description: "甜美又不失性感，穿出你的歐洲小鎮風情。" },
+      { id: 9, name: "亞文化豹紋半身裙", image: "image/photo9.jpg", price: 350, description: "叛逆中帶點野性，是派對辣妹的選擇。" },
+      { id: 10, name: "朋克風開衫牛仔短裙套裝", image: "image/photo10.jpg", price: 680, description: "自由不羈的精神在穿搭中體現。" },
+      { id: 11, name: "復古做舊字母上衣", image: "image/photo12.jpg", price: 320, description: "簡約中帶有獨特復古感，輕鬆駕馭日常造型。" },
+      { id: 12, name: "輕薄春夏灰色套裝", image: "image/photo13.jpg", price: 680, description: "舒適透氣的春夏推薦款。" },
+      { id: 13, name: "復古感豹紋腋下包", image: "image/photo20.jpg", price: 360, description: "豹紋回潮，搭配辣妹穿搭剛剛好。" },
+      { id: 14, name: "未來感銀色太陽眼鏡", image: "image/photo19.jpg", price: 250, description: "戴上即是未來派時尚ICON。" },
+      { id: 15, name: "高級感無框方形墨鏡", image: "image/photo16.jpg", price: 250, description: "低調又前衛，給你明星般氣場。" }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = parseInt(urlParams.get("id"));
+    const product = products.find(p => p.id === productId);
+    const container = document.getElementById("productContainer");
+
+    if (product) {
+      container.innerHTML = `
+        <div class="product-image">
+          <img src="${product.image}" alt="${product.name}" />
+        </div>
+        <div class="product-info">
+          <h1>${product.name}</h1>
+          <p class="price">$${product.price}</p>
+          <p>${product.description}</p>
+
+          <div class="quantity-controller">
+            <button id="decreaseBtn">-</button>
+            <span id="quantityDisplay">1</span>
+            <button id="increaseBtn">+</button>
+          </div>
+
+          <button class="add-to-cart-btn">加入購物車</button>
+          <a href="allproduct.html" class="back-btn">← 返回商品總覽</a>
+
+          <div class="review-section">
+            <h2>評分與評論</h2>
+            <div id="starRating" class="stars"></div>
+            <div class="review-input">
+              <textarea id="reviewText" placeholder="留下你的評論..."></textarea>
+              <button class="submit-review add-to-cart-btn">提交</button>
+            </div>
+            <div class="review-list" id="reviewList"></div>
+          </div>
+        </div>
+      `;
+      let quantity = 1;
+      const quantityDisplay = document.getElementById("quantityDisplay");
+      document.getElementById("increaseBtn").addEventListener("click", () => {
+        quantity++;
+        quantityDisplay.textContent = quantity;
+      });
+      document.getElementById("decreaseBtn").addEventListener("click", () => {
+        if (quantity > 1) {
+          quantity--;
+          quantityDisplay.textContent = quantity;
+        }
+      });
+
+      document.querySelector(".add-to-cart-btn").addEventListener("click", () => {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const existing = cart.find(item => item.id === product.id);
+        if (existing) {
+          existing.quantity += quantity;
+        } else {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: quantity
+          });
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("已加入購物車！");
+      });
+
+      let selectedRating = 0;
+      const starRatingEl = document.getElementById("starRating");
+
+      function renderStars() {
+        starRatingEl.innerHTML = "";
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement("span");
+          star.textContent = i <= selectedRating ? "★" : "☆";
+          star.addEventListener("click", () => {
+            selectedRating = i;
+            renderStars();
+          });
+          starRatingEl.appendChild(star);
+        }
+      }
+
+      renderStars();
+
+      document.querySelector(".submit-review").addEventListener("click", () => {
+        const text = document.getElementById("reviewText").value.trim();
+        if (selectedRating === 0 || text === "") {
+          alert("請輸入評論並選擇星數！");
+          return;
+        }
+        const reviews = JSON.parse(localStorage.getItem("reviews_" + productId)) || [];
+        reviews.push({ rating: selectedRating, text });
+        localStorage.setItem("reviews_" + productId, JSON.stringify(reviews));
+        document.getElementById("reviewText").value = "";
+        selectedRating = 0;
+        renderStars();
+        renderReviews();
+      });
+
+      function renderReviews() {
+        const reviews = JSON.parse(localStorage.getItem("reviews_" + productId)) || [];
+        const reviewList = document.getElementById("reviewList");
+        reviewList.innerHTML = reviews.map(r => `
+          <div class="review-item">
+            <div class="stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+            <p>${r.text}</p>
+          </div>
+        `).join("");
+      }
+
+      renderReviews();
+    } else {
+      container.innerHTML = "<p>找不到該商品資料。</p>";
+    }
+  </script>
+    <footer>
+      &copy; 2025 辣魂花開 LABONBU. All rights reserved.
+    </footer>
+</body>
+</html>
